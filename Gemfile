@@ -26,6 +26,7 @@ gem 'paperclip', '2.3.15'
 gem 'awesome_nested_set', :git => 'git://github.com/galetahub/awesome_nested_set.git'
 gem 'parseexcel', :git => 'https://github.com/databasically/parseexcel.git'
 
+gem 'rvm-capistrano'
 gem 'capistrano'
 gem 'unicorn'
 
