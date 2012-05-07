@@ -8,24 +8,10 @@ role :master_app, "dev.darammg.com"
 role :db,  "dev.darammg.com", :primary => true # This is where Rails migrations will run
 
 set :rails_env, "production"
-set :application, "nubo"
+set :application, "nubo_deploy"
 set :deploy_to, "/home/darammg/deploy/#{application}"
 set :branch, "master"
 
-namespace :delayed_job do
-  def rails_env
-    fetch(:rails_env, false) ? "RAILS_ENV=#{fetch(:rails_env)}" : ''
-  end
-
-  def args
-    fetch(:delayed_job_args, "")
-  end
-
-  def roles
-    fetch(:master_app)
-  end
-
-end
 after "deploy:stop"
 after "deploy:start"
 after "deploy:restart"
