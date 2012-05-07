@@ -1,0 +1,118 @@
+<p class="show_p">결과 레포트</p>
+<table class="table">
+	<tr>
+		<th id="total" style="width:10%">전체<br />( <%= NudeReport.total_count(report_analysis["total"]) %> )</th>
+		<td class="big" colspan='4'><%= gchart_url( report_analysis["total"] , 'big', nude_report) %></td>
+	</tr>
+</table><br /><br />
+<table class="table">
+	<tr>
+		<th rowspan='2' style="width:10%">성별</th>
+		<th id="man" colspan='2' style="width:45%">남자 ( <%= NudeReport.total_count(report_analysis["gender"]["man"]) %> )</th>
+		<th id="woman" colspan='2' style="width:45%">여자 ( <%= NudeReport.total_count(report_analysis["gender"]["woman"]) %> )</th>
+	</tr>
+	<tr>
+		<td class="middle" colspan='2'><%= gchart_url( report_analysis["gender"]["man"] , 'middle', nude_report) %></td>
+		<td class="middle" colspan='2'><%= gchart_url( report_analysis["gender"]["woman"] , 'middle', nude_report) %></td>
+	</tr>
+</table><br /><br />
+<table class="table">	
+	<tr>
+		<th rowspan='4' style="width:10%">연령</th>
+		<th id="age_10" style="width:45%">10대 ( <%= NudeReport.total_count(report_analysis["age"]["10"]) %> )</th>
+		<th id="age_20" style="width:45%">20대 ( <%= NudeReport.total_count(report_analysis["age"]["20"]) %> )</th>
+	</tr>
+	<tr>
+		<td class="middle"><%= gchart_url( report_analysis["age"]["10"] , 'middle', nude_report) %></td>
+		<td class="middle"><%= gchart_url( report_analysis["age"]["20"] , 'middle', nude_report) %></td>
+	</tr>
+	<tr>
+		<th id="age_30" style="width:45%">30대 ( <%= NudeReport.total_count(report_analysis["age"]["30"]) %> )</th>
+		<th id="age_40" style="width:45%">40대 이상 ( <%= NudeReport.total_count(report_analysis["age"]["40"]) %> )</th>
+	</tr>
+	<tr>
+		<td class="middle"><%= gchart_url( report_analysis["age"]["30"] , 'middle', nude_report) %></td>
+		<td class="middle"><%= gchart_url( report_analysis["age"]["40"] , 'middle', nude_report) %></td>
+	</tr>
+</table><br /><br />
+<table class="table"> 	
+	<tr>
+		<th rowspan='2' style="width:10%">10대</th>
+		<th id="gender_age_man_10" colspan='2' style="width:45%">남자 ( <%= NudeReport.total_count(report_analysis["gender_age"]["man"]["10"]) %> )</th>
+		<th id="gender_age_woman_10" colspan='2' style="width:45%">여자 ( <%= NudeReport.total_count(report_analysis["gender_age"]["woman"]["10"]) %> )</th>
+	</tr>
+	<tr>
+		<td class="middle" colspan='2'><%= gchart_url( report_analysis["gender_age"]["man"]["10"] , 'middle', nude_report) %></td>
+		<td class="middle" colspan='2'><%= gchart_url( report_analysis["gender_age"]["woman"]["10"] , 'middle', nude_report) %></td>
+	</tr>
+	<tr>
+		<th rowspan='2' style="width:10%">20대</th>
+		<th id="gender_age_man_20" colspan='2' style="width:45%">남자 ( <%= NudeReport.total_count(report_analysis["gender_age"]["man"]["20"]) %> )</th>
+		<th id="gender_age_woman_20" colspan='2' style="width:45%">여자 ( <%= NudeReport.total_count(report_analysis["gender_age"]["woman"]["20"]) %> )</th>
+	</tr>
+	<tr>
+		<td class="middle" colspan='2'><%= gchart_url( report_analysis["gender_age"]["man"]["20"] , 'middle', nude_report) %></td>
+		<td class="middle" colspan='2'><%= gchart_url( report_analysis["gender_age"]["woman"]["20"] , 'middle', nude_report) %></td>
+	</tr>
+	<tr>
+		<th rowspan='2' style="width:10%">30대</th>
+		<th id="gender_age_man_30" colspan='2' style="width:45%">남자 ( <%= NudeReport.total_count(report_analysis["gender_age"]["man"]["30"]) %> )</th>
+		<th id="gender_age_woman_30" colspan='2' style="width:45%">여자 ( <%= NudeReport.total_count(report_analysis["gender_age"]["woman"]["30"]) %> )</th>
+	</tr>
+	<tr>
+		<td class="middle" colspan='2'><%= gchart_url( report_analysis["gender_age"]["man"]["30"] , 'middle', nude_report) %></td>
+		<td class="middle" colspan='2'><%= gchart_url( report_analysis["gender_age"]["woman"]["30"] , 'middle', nude_report) %></td>
+	</tr>
+	<tr>
+		<th rowspan='2' style="width:10%">40대 이상</th>
+		<th id="gender_age_man_40" colspan='2' style="width:45%">남자 ( <%= NudeReport.total_count(report_analysis["gender_age"]["man"]["40"]) %> )</th>
+		<th id="gender_age_woman_40" colspan='2' style="width:45%">여자 ( <%= NudeReport.total_count(report_analysis["gender_age"]["woman"]["40"]) %> )</th>
+	</tr>
+	<tr>
+		<td class="middle" colspan='2'><%= gchart_url( report_analysis["gender_age"]["man"]["40"] , 'middle', nude_report) %></td>
+		<td class="middle" colspan='2'><%= gchart_url( report_analysis["gender_age"]["woman"]["40"] , 'middle', nude_report) %></td>
+	</tr>
+</table><br /><br />
+<table class="table">
+	<tr>
+		<th style="width:10%">질문공유</th>
+		<td colspan='2' style="width:45%"><a href="http://www.facebook.com/sharer.php?u=<%= URI.escape("#{CONFIG['host']}/nude_reports/#{nude_report.id}", Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")) %>" target="_blank"><img src="/images/facebook_icon.gif" /></a></td>
+		<td colspan='2' style="width:45%"><a href="http://twitter.com/home?status=<%=URI.escape("#{sns_q_string(nude_report)}")%> <%= URI.escape("#{CONFIG['host']}/nude_reports/#{nude_report.id}", Regexp.new("[^#{URI::PATTERN::UNRESERVED}]")) %> @NudeReport" target="_blank"><img src="/images/twitter_icon.gif" /></a></td>
+	</tr>
+</table>	
+<script>
+	var target = '<%= short_answer(nude_report).first %>';
+	if (target == "전체"){
+		$('#total').addClass('emphasis');
+	} else if (target == "남자"){
+		$('#man').addClass('emphasis');
+	} else if (target == "여자"){
+		$('#woman').addClass('emphasis');
+	} else if (target == "10대"){
+		$('#age_10').addClass('emphasis');
+	} else if (target == "20대"){
+		$('#age_20').addClass('emphasis');
+	} else if (target == "30대"){
+		$('#age_30').addClass('emphasis');
+	} else if (target == "40대"){
+		$('#age_40').addClass('emphasis');
+	} else if (target == "10대 남자"){
+		$('#gender_age_man_10').addClass('emphasis');
+	} else if (target == "20대 남자"){
+		$('#gender_age_man_20').addClass('emphasis');
+	} else if (target == "30대 남자"){
+		$('#gender_age_man_30').addClass('emphasis');
+	} else if (target == "40대 남자"){
+		$('#gender_age_man_40').addClass('emphasis');
+	} else if (target == "10대 여자"){
+		$('#gender_age_woman_10').addClass('emphasis');
+	} else if (target == "20대 여자"){
+		$('#gender_age_woman_20').addClass('emphasis');
+	} else if (target == "30대 여자"){
+		$('#gender_age_woman_30').addClass('emphasis');
+	} else if (target == "40대 여자"){
+		$('#gender_age_woman_40').addClass('emphasis');
+	}
+</script>
+
+		

@@ -1,0 +1,151 @@
+<script>
+	function report_answer(answer){
+		if ('<%= @screen %>' == 'request' ){
+			notify('요청 보고서는 추천 및 의견 작성만 가능합니다.');
+		} else if( $.cookie('tmp_user') == null) {
+			notify('필수정보를 먼저 입력해 주세요');
+			var tmp_user_position = document.getElementById("tmp_user").offsetTop - 150;
+			$(window).scrollTop(tmp_user_position);
+			$("#tmp_user .table").addClass('back_pink');
+		} else {
+			$.ajax({
+	            url: "/nude_reports/vote",
+	            type: 'POST',
+	            data: 'answer='+ answer + '&nude_report_id=<%= @nude_report.id %>',
+	            dataType: 'json',
+	            error: function(){
+	                return false;
+	            },
+	            success: function(data){
+	            	if (data.message != null){
+	            		notify(data.message);
+	            	}
+	            	$("#report_analysis").html(data.content);
+	            	var report_position = document.getElementById("report_analysis").offsetTop - 100;
+					$(window).scrollTop(report_position);
+	            },
+	            beforeSend: function(){
+	            	$(".loading").show();
+	            },
+	            complete: function(){
+	            	$(".loading").hide();
+	            }
+        	});
+		}
+	}
+	
+	function nude_report_like(nude_report_id){
+		if( $.cookie('tmp_user') == null) {
+			notify('필수정보를 먼저 입력해 주세요');
+			var tmp_user_position = document.getElementById("tmp_user").offsetTop - 150;
+			$(window).scrollTop(tmp_user_position);
+			$("#tmp_user .table").addClass('back_pink');
+		} else {
+			$.ajax({
+	            url: "/nude_reports/like",
+	            type: 'POST',
+	            data: '&nude_report_id='+nude_report_id,
+	            dataType: 'json',
+	            error: function(){
+	                return false;
+	            },
+	            success: function(data){
+	            	notify(data.message);
+	            },
+	            beforeSend: function(){
+	            },
+	            complete: function(){
+	            }
+        	});
+		}
+	}
+</script>
+
+<div>
+	<p class="show_title"><%='[' + @nude_report.category.name + ']' if @nude_report.category %>  <%= @nude_report.title %> 
+		<% if @screen == 'request' %>
+			&nbsp; <a class="btn" href="#" onclick="nude_report_like(<%= @nude_report.id %>); return false;">추천</a>
+		<% end %>
+	</p>	
+	<div align="center">
+		<%= image_tag @nude_report.report_images.find_by_position(5).image.url(:main), :class=> 'main_image' if @nude_report.report_images.find_by_position(5) %>
+	</div>
+	<br />
+	<table class="q_table">
+		<% unless @nude_report.a.blank? %>
+			<tr onclick="report_answer('a'); return false;">
+				<th style="width:10%">
+					1.
+				</th>
+				<%  if @nude_report.report_images.find_by_position(1) %>
+					<th style="width:10%">
+						<%= image_tag @nude_report.report_images.find_by_position(1).image.url(:option), :class=> 'option_image' if @nude_report.report_images.find_by_position(1) %>
+					</th>
+				<% end %>
+				<td>
+					<%= @nude_report.a %>
+				</td>
+			</tr>
+		<% end %>
+		<% unless @nude_report.b.blank? %>
+			<tr onclick="report_answer('b'); return false;">
+				<th style="width:10%">
+					2.
+				</th>
+				<% if @nude_report.report_images.find_by_position(1) %>
+					<th style="width:10%">
+						<%= image_tag @nude_report.report_images.find_by_position(2).image.url(:option), :class=> 'option_image' if @nude_report.report_images.find_by_position(2) %>
+					</th>
+				<% end %>
+				<td>
+					<%= @nude_report.b %>
+				</td>
+			</tr>
+		<% end %>
+		<% unless @nude_report.c.blank? %>
+			<tr onclick="report_answer('c'); return false;">
+				<th style="width:10%">
+					3.
+				</th>
+				<% if @nude_report.report_images.find_by_position(1) %>
+					<th style="width:10%">
+						<%= image_tag @nude_report.report_images.find_by_position(3).image.url(:option), :class=> 'option_image' if @nude_report.report_images.find_by_position(3) %>
+					</th>
+				<% end %>
+				<td>
+					<%= @nude_report.c %>
+				</td>
+			</tr>
+		<% end %>
+		<% unless @nude_report.d.blank? %>
+			<tr onclick="report_answer('d'); return false;">
+				<th style="width:10%">
+					4.
+				</th>
+				<% if @nude_report.report_images.find_by_position(1) %>
+					<th style="width:10%">
+						<%= image_tag @nude_report.report_images.find_by_position(4).image.url(:option), :class=> 'option_image' if @nude_report.report_images.find_by_position(4) %>
+					</th>
+				<% end %>
+				<td>
+					<%= @nude_report.d %>
+				</td>
+			</tr>
+		<% end %>
+	</table>
+</div>
+
+<% if @screen != 'request' %>	
+	<div id="report_analysis">	
+		<%= show_report_analysis(@nude_report) %>
+	</div>
+<% end %>
+	
+<div id="comment">
+	<%= render :partial => '/nude_reports/comment' %>
+</div>
+<div class="return_index_report">
+	<a href="/nude_reports?screen=<%=@screen%>">목록보기</a>	
+</div>		
+<%= link_to 'Destroy', @nude_report, method: :delete if current_user %>
+<script src="http://static.ak.fbcdn.net/connect.php/js/FB.Share" type="text/javascript"></script>

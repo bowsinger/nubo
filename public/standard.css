@@ -1,0 +1,5 @@
+#flash  { -moz-border-radius:7px; -webkit-border-radius:7px; border-radius:7px; background-color:#707070; color:#FFFFFF; padding:18px 5px; position:fixed; top:50%; left:50%; margin-left:-131px; margin-top:-30px; text-align:center; width:252px; z-index:990000; opacity:0.85; filter:alpha(opacity=85); font-size:14px; }
+
+.loading { -moz-border-radius:7px; -webkit-border-radius:7px; border-radius:7px; background-color:#707070; color:#FFFFFF; padding:18px 5px; position:fixed; top:50%; left:50%; margin-left:-131px; margin-top:-30px; text-align:center; width:252px; z-index:990000; opacity:0.85; filter:alpha(opacity=85); font-size:14px; }
+
+.loading img { position:relative; top:4px; }

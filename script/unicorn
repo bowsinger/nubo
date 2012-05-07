@@ -1,0 +1,151 @@
+#!/bin/sh 
+#
+# init.d script for single or multiple unicorn installations. Expects at least one .conf 
+# file in /etc/unicorn
+#
+# Modified by jay@gooby.org http://github.com/jaygooby
+# based on http://gist.github.com/308216 by http://github.com/mguterl
+#
+## A sample /etc/unicorn/my_app.conf
+## 
+## RAILS_ENV=production
+## RAILS_ROOT=/var/apps/www/my_app/current
+#
+# This configures a unicorn master for your app at /var/apps/www/my_app/current running in
+# production mode. It will read config/unicorn.rb for further set up. 
+#
+# You should ensure different ports or sockets are set in each config/unicorn.rb if
+# you are running more than one master concurrently.
+#
+# If you call this script without any config parameters, it will attempt to run the
+# init command for all your unicorn configurations listed in /etc/unicorn/*.conf
+#
+# /etc/init.d/unicorn start # starts all unicorns
+#
+# If you specify a particular config, it will only operate on that one
+#
+# /etc/init.d/unicorn start /etc/unicorn/my_app.conf
+#
+# MODIFIED AS RAILS SCRIPT by insoul
+# 1. unicorn.conf is in the $RAILS_ROOT/config directory
+#    this script must run in the $RAILS_ROOT directory
+#    so, $RAILS_ROOT does not need to define in the unicorn.conf
+# 2. unicorn_rails command must be in the $PATH
+# 3. transfer APP_ROOT system variable when unicorn start/restart/upgrade
+
+set -e
+
+sig () {
+  test -s "$PID" && kill -$1 `cat $PID`
+}
+
+oldsig () {
+  test -s $OLD_PID && kill -$1 `cat $OLD_PID`
+}
+
+cmd () {
+
+  case $1 in
+    start)
+      sig 0 && echo >&2 "[UNICORN]::Already running" && exit 0
+      echo "Starting"
+      echo $CMD
+      APP_ROOT=$RAILS_ROOT $CMD
+      ;;  
+    stop)
+      sig QUIT && echo "[UNICORN]::Graceful shutdown, waits for workers to finish their current request before finishing." && exit 0
+      echo >&2 "Not running"
+      ;;
+    force-stop)
+      sig TERM && echo "[UNICORN]::Quick shutdown, kills all workers immediately." && exit 0
+      echo >&2 "Not running"
+      ;;  
+    restart|reload)
+      sig HUP && echo "[UNICORN]::Reloads config file and gracefully restart all workers." && exit 0
+      echo >&2 "Couldn't reload, starting '$CMD' instead"
+      echo $CMD
+      APP_ROOT=$RAILS_ROOT $CMD
+      ;;  
+    upgrade)
+      sig USR2 && echo "[UNICORN]::Reexecute the running binary." && exit 0
+      echo >&2 "Couldn't upgrade, starting '$CMD' instead"
+      echo $CMD
+      APP_ROOT=$RAILS_ROOT $CMD
+      ;;  
+    rotate)
+      sig USR1 && echo "[UNICORN]::Reopen all logs owned by the master and all workers." && exit 0
+      echo >&2 "Couldn't rotate logs" && exit 1
+      ;;
+    *)  
+      echo "[UNICORN]::$1 is not unicorn script command"
+      echo >&2 $USAGE
+      exit 2
+      ;;
+    esac
+}
+
+setup () {
+  PID=$RAILS_ROOT/tmp/pids/unicorn.pid
+  OLD_PID="$PID.oldbin"
+
+  if [ -z "$RAILS_ENVIRONMENT" ]; then
+    echo "RAILS ENVIRONMENT: $RAILS_ENV"
+    CMD="unicorn -c $RAILS_ROOT/config/unicorn.rb -E $RAILS_ENV -D"
+  else
+    echo "RAILS ENVIRONMENT: $RAILS_ENVIRONMENT"
+    CMD="unicorn -c $RAILS_ROOT/config/unicorn.rb -E $RAILS_ENVIRONMENT -D"
+  fi
+}
+
+start_stop () {
+
+  # either run the start/stop/reload/etc command for every config under /etc/unicorn
+  # or just do it for a specific one
+
+  if [ $SCRIPT_CONF ]; then
+    echo "SCRIPT CONF: $SCRIPT_CONF"
+    . $SCRIPT_CONF
+    setup
+    cmd $UNICORN_COMMAND
+  else
+    for CONFIG in config/unicorn.conf; do
+      echo "SCRIPT CONF: $CONFIG"
+      # import the variables
+      . $CONFIG
+      setup
+
+      # run the start/stop/etc command
+      cmd $UNICORN_COMMAND
+    done
+   fi
+}
+
+USAGE="Usage: `basename $0` <start|stop|restart|upgrade|rotate|force-stop> [-e rails_env] [-s unicorn.conf]"
+
+if [ -z "$1" ]; then
+  echo $USAGE >&2
+  exit 3
+fi
+
+UNICORN_COMMAND=$1
+shift 1
+
+while getopts e:s: OPT; do
+  case "$OPT" in
+    e)
+      RAILS_ENVIRONMENT=$OPTARG
+      ;;
+    s)
+      SCRIPT_CONF=$OPTARG
+      ;;
+    \?)
+      echo $USAGE >&2
+      exit 1
+      ;;
+  esac
+done
+
+shift `expr $OPTIND - 1`
+
+start_stop
+

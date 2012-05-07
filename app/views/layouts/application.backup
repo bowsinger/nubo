@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>누보 :: 누드 보고서</title>
+  <%= javascript_include_tag("jquery-1.5.2.min", "application","jquery.cookie","google.jsapi","bootstrap-collapse") %>
+<!--   <link rel="stylesheet" href="/style.css" type="text/css" /> -->
+  <link rel="stylesheet" href="/bootstrap-sang.min.css" type="text/css" />
+  <link rel="stylesheet" href="/bootstrap-responsive-sang.css" type="text/css" />
+  <%= csrf_meta_tags %>
+  <style type="text/css">
+      body {
+        padding-bottom: 40px;
+      }
+      .sidebar-nav {
+        padding: 9px 0;
+      }
+    </style>
+</head>
+<body>
+	<div id="flash" class="flash_html" style="display:none;" >
+      <% flash.each do |name, msg| %>
+        <%= msg %>
+        <% flash.delete(name) %>
+      <% end %>
+    </div>
+    <div class="loading" style="display:none;">
+    	<div><img src="/images/ajax_busy_w.gif" height="20" /> Loading...</div>
+  	</div>
+  	<!-- <div id="header_meta">
+		<% if user_signed_in? %>
+			<span><%= current_user.email %></span>
+			<span><%= link_to "Logout", destroy_user_session_path, :method => :delete %></span><br /><br />
+		<% else %>
+			<span>&nbsp;&nbsp;&nbsp;<%= link_to "회원가입", new_user_registration_path %> </span>&nbsp;&nbsp;&nbsp;
+			<span><%= link_to "로그인", new_user_session_path %></span><br /><br />
+		<% end %>
+    </div> -->
+  	
+  	
+  	<div class="navbar">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="/">누보</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li class="<%= 'active' if @screen == 'today'%>"><a href="/nude_reports?screen=today">오늘 보고서</a></li>
+              <li class="<%= 'active' if @screen == 'past' %>"><a href="/nude_reports?screen=past">지난 보고서</a></li>
+              <li class="<%= 'active' if controller.controller_path == 'request_boards'%>"><a href="/request_boards">요청 게시판</a></li>
+              <li class="<%= 'active' if @screen == 'help' %>"><a href="/nude_reports?screen=help">도움말</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+    
+    
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span8">
+          <div class="row-fluid">
+            <%= yield %>
+          </div><!--/row-->
+        </div><!--/span-->
+        
+        <div class="span4">
+          <div class="well sidebar-nav">
+          	<div id="tmp_user">
+				<% if cookies["tmp_user"] %>
+  					<% tmp_user = ActiveSupport::JSON.decode(cookies["tmp_user"]) %>
+  					<table class ='post'>
+  						<tr>
+  							<th colspan='3'>현재상태</th>
+  						</tr>
+  						<tr>
+  							<td style="text-align:center">성별 : &nbsp; <%= tmp_user["gender"] %></td>
+  							<td>연령 : &nbsp; <%= tmp_user["age"] %></td>
+  							<td><a href='#' onclick='tmp_user_delete(); return false;'> 삭제 </a></td>
+  						</tr>
+  					</table>
+  				<% else %>
+  					<table class ="post">
+  						<tr>
+  							<th colspan="3">필수정보</th>
+  						</tr>
+  						<tr>
+  							<td>남 <%= radio_button_tag 'gender', 'male' %>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 여 <%= radio_button_tag 'gender', 'female' %></td>
+  							<td>
+  								연령 &nbsp;&nbsp;
+  								<select id="age" name="age" style="height:18px;width:60px;">
+  									<option value=""></option><option value="10대">10대 </option><option value="20대">20대 </option><option value="30대">30대 </option><option value="40대↑">40대↑</option>
+  								</select>
+  							</td>
+  							<td><a href="#" onclick="tmp_user(); return false;"> 확인 </a></td>
+  						</tr>
+  					</table>	
+  				<% end %>
+  			</div><br />
+  			<% if @side_nude_reports %>
+  				<% if @side_nude_reports.first && @side_nude_reports.first.today? %>
+  					<h3>추천 보고서</h3>
+  				<% else %>
+  					<h3>추천 보고서</h3>
+  				<% end %>
+  				<ul>
+					<% @side_nude_reports.each do |nude_report| %>
+					    <li  style="width:250px" class="<%= @nude_report == nude_report ? 'current_side_item' : 'side_item' if @nude_report %>"><a href="/nude_reports/<%=nude_report.id%>">Q. <%= nude_report.title %></a></li>
+					<% end %>
+				</ul>
+			<% end %>
+          </div><!--/.well -->
+        </div><!--/span-->
+      </div><!--/row-->
+	  			
+	  <hr>
+
+      <footer>
+        <p>© Company 2012</p>
+      </footer>
+
+    </div><!--/.fluid-container-->
+	
+	
+	<script type="text/javascript">
+		function notify(flash_message){
+			// jQuery: reference div, load in message, and fade in
+		    var flash_div = $("#flash");
+		    flash_div.html(flash_message);
+		    flash_div.attr('class', 'flash_ajax');
+		    flash_div.fadeIn("fast");
+		      
+		    // use Javascript timeout function to delay calling
+		    // our jQuery fadeOut, and hide
+		    setTimeout(function(){
+		    	flash_div.fadeOut("fast", function(){
+		        	flash_div.html("");
+		        	flash_div.attr('class', 'flash_html');
+		        	flash_div.hide();
+		      	})
+		    }, 2000);
+		}
+		$(document).ready(function(){
+			var flash_message = $.trim($("#flash").html());
+			// call our flash display function
+			if (flash_message != "") {
+			    notify(flash_message);
+			}
+		});
+	</script>
+</body>
+</html>

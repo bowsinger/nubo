@@ -1,0 +1,104 @@
+<%= form_for(@nude_report, :multipart => true) do |f| %>
+  <% if @nude_report.errors.any? %>
+    <div>
+      <h2><%= pluralize(@nude_report.errors.count, "error") %> prohibited this nude_report from being saved:</h2>
+
+      <ul>
+      <% @nude_report.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+  <% if current_user %>
+	  <div class="field">
+		<%= f.label :report_type %>
+		<%= f.select :report_type, ['nude', 'request'], :selected => @nude_report.report_type != nil ? @nude_report.report_type : 'request' %>
+	  </div>
+	  <div class="field">
+		<%= f.label :start_at %>
+		<%= f.datetime_select :start_at %>
+	  </div>
+	  <div class="field">
+		<%= f.label :end_at %>
+		<%= f.datetime_select :end_at %>
+	  </div>
+  <% end %>
+  <div>
+  	<table class="new_report_table_1">
+  		<tr>
+  			<th style="width:10%">분류</th>
+  			<td><%= f.select :category_id, (Category.all.map {|category| [category.name, category.id]}), { :include_blank => true }, :class => 'select_box' %></td>
+  		</tr>
+  		<tr>
+  			<th style="width:10%">질문</th>
+  			<td><input type="text" name="nude_report[title]" class="input_text_title" value="<%= @nude_report.title if @nude_report.title %>"></td>
+  		</tr>
+  	</table>
+	<div class="new_report_main_image">
+		<a href="#" class="btn" onclick ="javascript:document.getElementById('nude_report_image_5').click(); return false;">메인 이미지 첨부</a>
+		<%= f.file_field :image_5, :style => "visibility:hidden; width:1px;" %>
+	</div>
+	<table class="new_report_table_2">
+		<tr>
+			<th rowspan="4" class="no_border" style="width:10%">
+				보기
+			</th>
+			<th style="width:10%">
+				1.
+			</th>
+			<!--  TODO 모바일일때 이미지 등록 못하게 변경-->
+			<th style="width:14%; white-space:nowrap;">
+				<a href="#" class="btn" onclick ="javascript:document.getElementById('nude_report_image_1').click(); return false;">이미지 첨부</a>
+		      	<%= f.file_field :image_1, :style => "visibility:hidden; width:1px;" %>
+			</th>
+			<td>
+				<input name="nude_report[a]" type="text" class="input_text" value="<%= @nude_report.a if @nude_report.a %>">
+			</td>
+		</tr>
+		<tr>
+			<th style="width:10%">
+				2.
+			</th>
+			<th style="width:14%; white-space:nowrap;">
+				<a href="#" class="btn" onclick ="javascript:document.getElementById('nude_report_image_2').click(); return false;">이미지 첨부</a>
+		      	<%= f.file_field :image_2, :style => "visibility:hidden; width:1px;" %>
+			</th>
+			<td>
+				<input name="nude_report[b]" type="text" class="input_text" value="<%= @nude_report.b if @nude_report.b %>"> 
+			</td>
+		</tr>
+		<tr>
+			<th style="width:10%">
+				3.
+			</th>
+			<th style="width:14%; white-space:nowrap;">
+				<a href="#" class="btn" onclick ="javascript:document.getElementById('nude_report_image_3').click(); return false;">이미지 첨부</a>
+		      	<%= f.file_field :image_3, :style => "visibility:hidden; width:1px;" %>
+			</th>
+			<td>
+				<input name="nude_report[c]" type="text" class="input_text" value="<%= @nude_report.c if @nude_report.c %>">
+			</td>
+		</tr>
+		<tr>
+			<th style="width:10%">
+				4.
+			</th>
+			<th style="width:14%; white-space:nowrap;">
+				<a href="#" class="btn" onclick ="javascript:document.getElementById('nude_report_image_4').click(); return false;">이미지 첨부</a>
+		      	<%= f.file_field :image_4, :style => "visibility:hidden; width:1px;" %>
+			</th>
+			<td>
+				<input name="nude_report[d]" type="text" class="input_text" value="<%= @nude_report.d if @nude_report.d %>">
+			</td>
+		</tr>
+		<tr>
+			<td colspan="4" style="border:none; text-align:right;  padding:20px 10px 30px; 0;"><a href="/nude_reports" class="btn btn-large" style="color:#888">취소</a><input name="commit" type="submit" value="등록" class="btn btn-large" style="color:#1384AF; margin-left:30px;"></td>
+		</tr>
+	</table>
+	
+	
+  </div>
+  
+  
+<% end %>

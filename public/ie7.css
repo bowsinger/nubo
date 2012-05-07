@@ -1,0 +1,9 @@
+.main-wrap {
+   width:960px; margin: auto; background:white; padding: 28px 18px 48px 18px; margin-top:30px; margin-bottom:30px;
+   zoom: 1;
+   filter: 
+   		   progid:DXImageTransform.Microsoft.Shadow(Color=#cccccc, Strength=8, Direction=0),
+           progid:DXImageTransform.Microsoft.Shadow(Color=#cccccc, Strength=8, Direction=90),
+           progid:DXImageTransform.Microsoft.Shadow(Color=#cccccc, Strength=8, Direction=180),
+           progid:DXImageTransform.Microsoft.Shadow(Color=#cccccc, Strength=8, Direction=270);
+}

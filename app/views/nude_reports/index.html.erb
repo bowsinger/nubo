@@ -1,0 +1,165 @@
+<% if @screen != 'request' %>
+<script>
+	function report_answer(nude_report_id, answer){
+		if( $.cookie('tmp_user') == null) {
+			notify('필수정보를 먼저 입력해 주세요');
+			var tmp_user_position = document.getElementById("tmp_user").offsetTop - 150;
+			$(window).scrollTop(tmp_user_position);
+			$("#tmp_user .table").addClass('back_pink');
+		} else {
+			$.ajax({
+	            url: "/nude_reports/index_vote",
+	            type: 'POST',
+	            data: 'answer='+ answer + '&nude_report_id=' + nude_report_id,
+	            dataType: 'json',
+	            error: function(){
+	                return false;
+	            },
+	            success: function(data){
+	            	if (data.message != null){
+	            		notify(data.message);
+	            	}
+	            	$("#border_div_"+nude_report_id).removeClass('white_pink');
+	            	$("#result_"+ nude_report_id).html(data.content);
+	            },
+	            beforeSend: function(){
+	            	$(".loading").show();
+	            },
+	            complete: function(){
+	            	$(".loading").hide();
+	            }
+        	});
+		}
+	}
+	
+</script>
+
+<div id="index">
+	<% @nude_reports.each do |nude_report| %>
+	<% vote =  Vote.where("uniq_key = ? AND nude_report_id = ?", cookies["uniq_key"], nude_report.id).first %>
+	<% @user_complete = (nude_report.man_vote_count >= 1000 && ActiveSupport::JSON.decode(cookies["tmp_user"])["gender"] == '남자') || (nude_report.woman_vote_count >= 1000 && ActiveSupport::JSON.decode(cookies["tmp_user"])["gender"] == '여자') if cookies["tmp_user"] %>
+		<div class="border_div <%= "white_pink" if (vote.blank? && @user_complete == false) || @user_complete.nil? %>" id="border_div_<%=nude_report.id%>">
+		<div class="index_div">
+			<div class="div_inner">
+				<table class="div_table">
+					<tbody>
+						<tr>
+							<th colspan="2" class="div_table_title"><%= '[' + nude_report.category.name + '] ' if nude_report.category %><%= nude_report.title %></th>
+						</tr>
+						<% if nude_report.report_images.find_by_position(5) %>
+						<tr>
+							<td colspan="2">
+								<%= image_tag nude_report.report_images.find_by_position(5).image.url(:main), :class=> 'main_image' %>
+							</td>
+						</tr>
+						<% end %> 
+						<tr onclick="report_answer('a'); return false;">
+						<tr>
+							<td style="width:50%"><a href="#" onclick="report_answer(<%=nude_report.id %>, 'a'); return false;" class="answer_btn"><%= nude_report.a %></a></td>
+							<td style="width:50%"><a href="#" onclick="report_answer(<%=nude_report.id %>, 'b'); return false;" class="answer_btn"><%= nude_report.b %></a></td>
+						</tr>
+						<% unless nude_report.c.blank? %>
+						<tr>
+							<td style="width:50%"><a href="#" onclick="report_answer(<%=nude_report.id %>, 'c'); return false;" class="answer_btn"><%= nude_report.c %></a></td>
+							<% unless nude_report.d.blank? %>
+							<td style="width:50%"><a href="#" onclick="report_answer(<%=nude_report.id %>, 'd'); return false;" class="answer_btn"><%= nude_report.d %></a></td>
+							<% end %>
+						</tr>
+						<% end %>
+					</tbody>
+				</table>
+				<div id="result_<%=nude_report.id%>" class="short_result_div">
+				<% if !(vote.blank?) || @user_complete == true %>
+					<%= render :partial => '/nude_reports/short_report_analysis', :locals => {:nude_report => nude_report } %>
+				<% end %>
+				</div>
+			</div>
+		</div>
+		</div>
+	<% end %>
+</div>
+<% else %>
+    
+    
+<div id="content_div"></div>
+
+<script>
+	function nude_report_like(nude_report_id){
+		if( $.cookie('tmp_user') == null) {
+			notify('필수정보를 먼저 입력해 주세요');
+			var tmp_user_position = document.getElementById("tmp_user").offsetTop - 150;
+			$(window).scrollTop(tmp_user_position);
+			$("#tmp_user .table").addClass('back_pink');
+		} else {
+			$.ajax({
+	            url: "/nude_reports/like",
+	            type: 'POST',
+	            data: '&nude_report_id='+nude_report_id,
+	            dataType: 'json',
+	            error: function(){
+	                return false;
+	            },
+	            success: function(data){
+	            	notify(data.message);
+	            	$("#like_"+ nude_report_id).html(data.count);
+	            },
+	            beforeSend: function(){
+	            },
+	            complete: function(){
+	            }
+        	});
+		}
+	}
+</script>
+
+<div id="index">
+	<table class="index_table">
+	  <tr>
+	  	<th style="width:18%">작성자</th>
+	    <th class="th_title" style="width:51%">제목</th>
+    	<th style="width:9%">추천</th>
+    	<th style="width:9%">조회</th>
+	    <th style="width:13%">날짜</th>
+	  </tr>
+		<% @nude_reports.each do |nude_report| %>
+		  <tr class="hover" onclick="window.location='/nude_reports/<%=nude_report.id%>'">
+		  	<td><%= nude_report.age.to_s + '대' if nude_report.age %> <%= nude_report.gender %></td>
+		    <td class="td_title">
+		    	<%= '[' + nude_report.category.name + ']' if nude_report.category %> <%= nude_report.title %></span>&nbsp;<span class="comment_count"><%= nude_report.comment_count if nude_report.comment_count != 0 %>
+		    </td>
+	    	<td><%= nude_report.nude_report_likes.count %></td>
+	    	<td><%= nude_report.check_count %></td>
+	    	<td><%= nude_report.created_at.to_s(:simple_day)%></td>
+		  </tr>
+		<% end %>
+		<tr class="request_new" onclick="window.location='/nude_reports/new'">
+			<td colspan="5">요청 보고서 작성</td>
+		</tr>
+	</table>
+</div>
+<% end %>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

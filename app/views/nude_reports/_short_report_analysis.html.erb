@@ -1,0 +1,41 @@
+<p>결과</p>
+
+<% expires = 5.minutes if @screen == 'today' %>
+<% expires = 10.minutes if @screen == 'past' %>
+<% expires = 1.year if @screen == 'complete' %>
+
+<% cache("nude_reports/short_report_analysis/#{nude_report.id}", :expires_in => expires ) do %>
+	<% report_analysis = nude_report.short_report_analysis_count %>	
+	<table class="short_result_table">
+		<tbody class="short_answer">
+			<tr class="answer_tr">
+				<th>전체( <%= NudeReport.total_count(report_analysis["total"]) %> )</th>
+				<th>남자( <%= NudeReport.total_count(report_analysis["gender"]["man"]) %> )</th>
+				<th>여자( <%= NudeReport.total_count(report_analysis["gender"]["woman"]) %> )</th>
+			</tr>
+			<tr class="answer_tr">
+				<td><%= gchart_url( report_analysis["total"] , 'short', nude_report) %></td>
+				<td><%= gchart_url( report_analysis["gender"]["man"] , 'short', nude_report) %></td>
+				<td><%= gchart_url( report_analysis["gender"]["woman"] , 'short', nude_report) %></td>
+			</tr>
+			<% if NudeReport.total_count(report_analysis["total"]) >= 3 %>
+			<tr class="legend_tr">
+				<td colspan="3">
+					<%= gchart_legend_url(nude_report) %>
+				</td>
+			</tr>
+			<% end %>
+		</tbody>
+	</table>
+<% end %>
+
+<!-- <hr style="border-top:1px solid #c5c5c5;" />
+<p>한줄 의견</p>
+어쩌구 저쩌구 -->
+
+
+
+<div style="text-align:center">
+	<a href="/nude_reports/<%=nude_report.id%>" class="answer_btn btn-primary detail_btn">상세 보기</a>
+</div>
+

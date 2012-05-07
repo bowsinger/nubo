@@ -1,0 +1,49 @@
+<script>
+		function free_board_like(free_board_id){
+		if( $.cookie('tmp_user') == null) {
+			notify('필수정보를 먼저 입력해 주세요');
+			var tmp_user_position = document.getElementById("tmp_user").offsetTop - 150;
+			$(window).scrollTop(tmp_user_position);
+			$("#tmp_user .table").addClass('back_pink');
+		} else {
+			$.ajax({
+	            url: "/free_boards/like",
+	            type: 'POST',
+	            data: '&free_board_id='+free_board_id,
+	            dataType: 'json',
+	            error: function(){
+	                return false;
+	            },
+	            success: function(data){
+	            	notify(data.message);
+	            	$("#like_"+ free_board_id).html(data.count);
+	            },
+	            beforeSend: function(){
+	            },
+	            complete: function(){
+	            }
+        	});
+		}
+	}
+</script>
+<div id="index">
+	<table class ='index_table'>
+	  <tr>
+	  	<th class="free_board_title"><%= '[' + @free_board.category.name + ']' if @free_board.category  %> 제목 : <%= @free_board.title %> &nbsp;<a class="btn" href="#" onclick="free_board_like(<%= @free_board.id %>); return false;">추천</a> <br /><br />
+	  		<span class="free_board_sub_th"><%= @free_board.age %>대 <%= @free_board.gender %>의 글</span> 
+	  	</th>
+	  </tr>
+	  <tr>
+	    <td class="td_title"><%=raw @free_board.contents.gsub(/\n/,'<br />') if @free_board.contents %></td>
+	  </tr>
+	</table>
+	<div id="comment">
+		<%= render :partial => '/free_boards/comment' %>
+	</div>
+	<div class="return_index">
+		<a href="/free_boards">목록보기</a>	
+	</div>
+	<%= link_to 'Destroy', @nude_report, method: :delete if current_user %>
+</div>
+
+<br />

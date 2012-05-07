@@ -1,0 +1,8 @@
+development:
+  host: 'http://nu-bo.com'
+
+production:
+  host: 'http://nu-bo.com'
+  
+  
+

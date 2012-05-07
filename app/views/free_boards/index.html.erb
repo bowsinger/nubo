@@ -1,0 +1,30 @@
+<div id="index">
+	<table class="index_table">
+	  <tr>
+	    <th style="width:18%">작성자</th>
+	    <th class="th_title" style="width:51%">제목</th>
+    	<th style="width:9%">추천</th>
+    	<th style="width:9%">조회</th>
+	    <th style="width:13%">날짜</th>
+	  </tr>
+		<% @free_boards.each do |free_board| %>
+		  <tr class="hover" onclick="window.location.href='/free_boards/<%=free_board.id%>'">
+		    <td><%= free_board.age %>대 <%= free_board.gender %></td>
+		    <td class="td_title">
+		    	<%='[' + free_board.category.name + ']' if free_board.category %> <%= free_board.title %></span>&nbsp;<span class="comment_count"><%= free_board.comment_count if free_board.comment_count != 0 %>
+		    </td>
+		    <td><%= free_board.free_board_likes.count %></td>
+		    <td><%= free_board.check_count %></td>
+		    <td><%= free_board.created_at.to_s(:simple_day) %></td>
+		  </tr>
+		<% end %>
+		<tr class="request_new" onclick="window.location.href='/free_boards/new'">
+			<td colspan="5">글 작성</td>
+		</tr>
+	</table>
+</div>
+
+
+
+
+<br />

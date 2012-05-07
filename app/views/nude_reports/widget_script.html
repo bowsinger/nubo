@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Module>
+  <ModulePrefs title="JSON Examlple" height="270">
+    <Require feature="opensocial-0.7"/>
+  </ModulePrefs>
+  <Content type="html">
+  <![CDATA[
+<!--START_위젯뱅크에서 자동으로 생성한 코드입니다. -->
+<link rel="stylesheet" href="http://widgetcfs1.daum.net/data/css/skin/skin_white.css" type="text/css" charset="UTF-8" />
+<div class="skin_top"><span class="skin_tl"></span><h1 id="head_title"></h1><span class="skin_tr"></span></div>
+<div class="skin_content"><span class="skin_cl"></span><span class="content">
+<!-- 위젯뱅크에서 자동으로 생성한 코드입니다. _START-->
+
+<div id="content_div" style="padding:0 5px 0 5px;"></div>
+<script type="text/javascript">
+	var original_num = 1;
+	function next_request(type){
+		if(type == 1){
+			if(original_num == 1){
+				original_num = 8;
+			}else{
+				original_num = original_num - 1;
+			}
+			makeJSONRequest(original_num);
+		} else {
+			if(original_num == 8 ){
+				original_num = 1;
+			} else{
+				original_num = original_num + 1 ;
+			}
+			makeJSONRequest(original_num);
+		}
+	}
+
+    function makeJSONRequest(num) {    
+      var params = {};
+      params[gadgets.io.RequestParameters.CONTENT_TYPE] = gadgets.io.ContentType.JSON;
+      params[gadgets.io.RequestParameters.REFRESH_INTERVAL] = 10 * 60;
+      // This URL returns a JSON-encoded string that represents a JavaScript object
+      var url = "http://nu-bo.com/nude_reports/widget_api.json?number=" + num;
+      gadgets.io.makeRequest(url, response, params);
+    };
+
+    function response(obj) { 
+        var jsondata = obj.data;
+
+		// JSON의 dataList를 가져옴
+		var question = jsondata['question'];
+		var link = jsondata['link'];
+		var chart_url = jsondata['chart_url'];
+		var legend_url = jsondata['legend_url'];
+		var head = "<a style='padding-left:5px; text-decoration:none; font-size:12px; font-weight:bold; color:black;' href='http://nu-bo.com' target='_blank'>누드보고서</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a style='text-decoration:none; color:#ef3982; font-size:8px;' href='"+ link + "' target='_blank'>자세히 보기</a>";
+		var html = "<a style='text-decoration:none;' href='"+ link + "' target='_blank'><p style='padding-right:5px; padding-left:5px; font-size:9px; font-weight:bold; color:#1384AF;'>" + question + "</p></a><a style='text-decoration:none;' href='"+ link + "' target='_blank'><img src='" + chart_url + "' /><img src='" + legend_url + "' /></a><div style='text-align:center'><a style='text-decoration:none; color:#ef3982; font-size:20px;' href='#' onclick='next_request(1); return false;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a><a style='text-decoration:none; color:#ef3982; font-size:20px;' href='#' onclick='next_request(2); return false;'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></div>";
+		document.getElementById('head_title').innerHTML = head;
+		document.getElementById('content_div').innerHTML = html;
+    };
+    
+    gadgets.util.registerOnLoadHandler(makeJSONRequest(1));
+</script>
+<!--END_위젯뱅크에서 자동으로 생성한 코드입니다.--></span><span class="skin_cr"></span></div>
+<div class="skin_bottom"><span class="skin_bl"></span><span class="skin_bc"></span><span class="skin_br"></span></div><!--_END-->
+]]>
+  </Content>
+</Module>

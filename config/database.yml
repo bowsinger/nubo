@@ -1,0 +1,36 @@
+development:
+  adapter: mysql2
+  encoding: utf8
+  username: root
+  password: eoqkr2010
+  host: vps108.narru.net
+  port: 40028
+  timeout: 5000
+  database: nubo_development
+
+production:
+  adapter: mysql2
+  encoding: utf8
+  username: root
+  password: p0579808
+  host: localhost
+  timeout: 5000
+  database: nubo  
+  
+  
+# test:
+  # adapter: sqlite3
+  # database: db/test.sqlite3
+  # pool: 5
+  # timeout: 5000
+# 
+# production:
+  # adapter: mysql2
+  # encoding: utf8
+  # pool: 100
+  # timeout: 5000
+  # database: searchdic
+  # username: awteam
+  # password: eoqkr2010
+  # reconnect: true
+  # host: dev89.thinkreals.com

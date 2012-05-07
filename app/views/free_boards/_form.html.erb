@@ -1,0 +1,31 @@
+<%= form_for(@free_board, :html => {:multipart => true}) do |f| %>
+  <% if @free_board.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@free_board.errors.count, "error") %> prohibited this free_board from being saved:</h2>
+
+      <ul>
+      <% @free_board.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+	<table class ='new_report_table_1'>
+		<tr>
+  			<th style="width:10%;">분류</th>
+  			<td><%= f.select :category_id, (Category.all.map {|category| [category.name, category.id]}), { :include_blank => true }, :class => 'select_box' %></td>
+  		</tr>
+  		<tr>
+  			<th style="width:10%">제목</th>
+  			<td><input type="text" name="free_board[title]" class="input_text_title"></td>
+  		</tr>
+  		<tr>
+  			<th style="width:10%" class="table_contents">내용</th>
+  			<td><textarea name="free_board[contents]" class="input_textarea"/></textarea></td>
+  		</tr>
+  		<tr>
+			<td colspan="4" style="border:none; text-align:right;  padding:20px 10px 30px; 0;"><a href="/free_boards" class="btn btn-large" style="color:#888">취소</a><input name="commit" type="submit" value="등록" class="btn btn-large" style="color:#1384AF; margin-left:30px;"></td>
+		</tr>
+	</table>
+<% end %>

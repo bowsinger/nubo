@@ -1,0 +1,123 @@
+<script>
+	function children_add_comment(parent_comment_id){
+		var children_comment = '<textarea class="new_comment_textarea" id="new_comment" name="new_comment"></textarea><a class="new_comment_btn" href="#" onclick="add_comment(' + parent_comment_id + '); return false;">등록<!--아이콘으로 변경 --></a>';
+		$('#comment_'+ parent_comment_id + ' .add_comment').html(children_comment);
+		$('#comment_'+ parent_comment_id + ' .add_comment').show();
+		
+		var return_comment ='<a id="comment_to_comment_'+ parent_comment_id +'" href="#" onclick="children_remove_comment('+ parent_comment_id +'); return false;">[의견접기]</a>'
+		$('#comment_to_comment_' + parent_comment_id ).replaceWith(return_comment);
+	}
+	function children_remove_comment(parent_comment_id){
+		
+		var return_comment ='<a id="comment_to_comment_'+ parent_comment_id +'" href="#" onclick="children_add_comment('+ parent_comment_id +'); return false;">[의견추가]</a>'
+		$('#comment_to_comment_' + parent_comment_id ).replaceWith(return_comment);
+		$('#comment_'+ parent_comment_id + ' .add_comment').html('');
+		$('#comment_'+ parent_comment_id + ' .add_comment').hide();
+	}
+	
+	function add_comment(parent_id){
+		var comment = $("#new_comment").val();
+		if( $.cookie('tmp_user') == null) {
+			notify('필수정보를 먼저 입력해 주세요');
+			var tmp_user_position = document.getElementById("tmp_user").offsetTop - 150;
+			$(window).scrollTop(tmp_user_position);
+			$("#tmp_user .table").addClass('back_pink');
+		} else if ( comment == '') {
+			notify('의견이 비었습니다');
+		} else {
+			$.ajax({
+	            url: "/free_boards/add_comment",
+	            type: 'POST',
+	            data: 'comment='+ comment + '&free_board_id=<%= @free_board.id %>&parent_id=' + parent_id,
+	            dataType: 'json',
+	            error: function(){
+	                return false;
+	            },
+	            success: function(data){
+	            	if (data.message != null){
+	            		notify(data.message);
+	            	}
+	            	$("#comment").html(data.content);
+	            },
+	            beforeSend: function(){
+	            	$(".loading").show();
+	            },
+	            complete: function(){
+	            	$(".loading").hide();
+	            }
+        	});
+		}
+	}
+	function delete_comment(comment_id){
+		if( $.cookie('tmp_user') == null) {
+			notify('필수정보를 먼저 입력해 주세요');
+		} else {
+			$.ajax({
+	            url: "/free_boards/delete_comment",
+	            type: 'delete',
+	            data: 'comment_id='+ comment_id + '&free_board_id=<%= @free_board.id %>',
+	            dataType: 'json',
+	            error: function(){
+	                return false;
+	            },
+	            success: function(data){
+	            	if (data.message != null){
+	            		notify(data.message);
+	            	}
+	            	$("#comment").html(data.content);
+	            },
+	            beforeSend: function(){
+	            },
+	            complete: function(){
+	            }
+        	});
+		}
+	}
+</script>
+
+
+
+<div class="comment">
+	<% @comments.each do |comment|%>
+		<div id="comment_<%= comment.id %>">
+			<div class="comment_list <%= comment.gender == '남자' ? 'man_comment' : 'girl_comment' %>" >
+				<div style="width:70%">
+					<%= comment.gender %>
+					<%= comment.age %> 대
+	<!-- 		TODO :	아이콘 넣자 -->
+				<% if cookies["uniq_key"] == comment.uniq_key || current_user %>	
+					<a class="comment_delete" href="#" onclick="delete_comment(<%=comment.id%>); return false;">삭제</a>
+				<% end %> 
+				<br />
+				<p class="p_comment"><%= raw comment.comment.gsub(/\n/,'<br />') if comment.comment %></p>
+				</div>
+				<div class="comment_button"><div class="comment_date"><%= (comment.created_at + 9.hours).to_s(:dash_date) %><br /><%= (comment.created_at + 9.hours).to_s(:dash_time) %></div><a id="comment_to_comment_<%=comment.id%>" href="#" onclick="children_add_comment(<%=comment.id%>); return false;">[의견추가]</a></div>
+			</div>
+			<% unless comment.children.blank? %>
+				<% comment.children.each do |child| %>
+					<div class="comment_child <%= child.gender == '남자' ? 'man_comment' : 'girl_comment' %>">
+						<div style="width:65%">
+							<%= child.gender %>
+							<%= child.age %> 대
+							<!-- 		TODO :	아이콘 넣자 -->
+							<% if cookies["uniq_key"] == child.uniq_key || current_user %>
+								<a class="comment_delete" href="#" onclick="delete_comment(<%=child.id%>); return false;">삭제</a>
+							<% end %>
+							<br />
+							<p class="p_comment"><%= raw child.comment.gsub(/\n/,'<br />') if child.comment %></p>
+							<!-- TODO 차일드 알려주는 이미지 넣자-->
+						</div>
+						<div class="comment_button"><div class="comment_date"><%= (child.created_at + 9.hours).to_s(:dash_date) %><br /><%= (child.created_at + 9.hours).to_s(:dash_time) %></div></div>
+					</div>
+				<% end %>
+			<% end %>
+			<div class="add_comment">
+			</div>
+		</div>
+	<% end %>
+</div>
+<div class="new_comment">
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;의견 작성 <br /><br />
+	<textarea class="new_comment_textarea" id="new_comment" name="new_comment"></textarea><a class="new_comment_btn" href="#" onclick="add_comment(); return false;">등록</a>
+</div>
+<br /><br />
