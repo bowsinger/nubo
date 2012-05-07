@@ -15,6 +15,7 @@ set :copy_exclude, ['.git']
 default_run_options[:pty] = true
 
 namespace :deploy do
+  
   desc "use environment configuration"
   task :copy_env_config, :roles => [:app, :web] do
     config_dir = rails_env unless exists?(:config_d)

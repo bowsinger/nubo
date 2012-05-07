@@ -11,8 +11,3 @@ set :rails_env, "production"
 set :application, "nubo_deploy"
 set :deploy_to, "/home/darammg/deploy/#{application}"
 set :branch, "master"
-
-after "deploy:stop"
-after "deploy:start"
-after "deploy:restart"
-after "bundle:install"
